@@ -1,0 +1,53 @@
+const mongoose = require("mongoose");
+
+// schema to save documents
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String, 
+        required: true,
+        minlength: 5,
+        maxlength: 30
+    },
+    email: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 200,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 5,
+        maxlength: 1024,
+    },
+    bookmarked: {
+        type: [{
+            title: String,
+            slug: String,
+            image: String,
+            episode: Number,
+            currentEpisode: Number,
+        }],
+        default: [],
+    },
+    watched: {
+        type: [{
+            title: String,
+            slug: String,
+            image: String,
+            episodes: [{
+                id: String,
+                number: Number
+            }]
+        }],
+        default: []
+    }
+    
+}, {
+    timestamps: true,
+});
+
+const userModel = mongoose.model("User", userSchema);
+
+module.exports = userModel;
