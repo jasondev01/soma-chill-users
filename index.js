@@ -7,7 +7,7 @@ const app = express(); // add extra capability
 require("dotenv").config(); 
 
 const corsOptions = {
-    origin: ["https://soma-chill.vercel.app", "https://localhost:5000"],
+    origin: ["https://soma-chill.vercel.app", "http://localhost:5173", "*"],
     credentials: true,
 };
 
