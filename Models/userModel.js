@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String, 
         required: true,
-        minlength: 5,
+        minlength: 3,
         maxlength: 30
     },
     email: {
@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema({
             title: String,
             slug: String,
             image: String,
-            episode: Number,
             currentEpisode: Number,
         }],
         default: [],

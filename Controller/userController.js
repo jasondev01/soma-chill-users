@@ -27,6 +27,9 @@ const registerUser = async (req, res) => {
         if(!validator.isStrongPassword(password)) {
             return res.status(400).json("Password must be a strong password"); // validates emaill
         }
+        if (name.length < 3 ) {
+            return res.status(400).json("Name must be three characters or longer")
+        }
         user = new userModel({name, email, password}); // if the above condition is success, then proceed to post new User
 
         const salt = await bcrypt.genSalt(10); // makes a hash with 10 letters
@@ -98,8 +101,7 @@ const addBookmark = async (req, res) => {
             slug,
             title,
             image,
-            episode,
-            currentEpisode, 
+            currentEpisode,
         };
 
         user.bookmarked.push(newBookmark);
@@ -112,23 +114,23 @@ const addBookmark = async (req, res) => {
 };
   
 const removeBookmark = async (req, res) => {
-    const { userId, recipeUri } = req.body;
-  
+    const { userId, slug } = req.body; 
+
     try {
         const user = await userModel.findByIdAndUpdate(
             userId,
             { 
                 $pull: { 
-                    favorites: recipeUri 
+                    bookmarked: { slug } 
                 } 
-            }, // Remove the recipeUri from favorites array
+            },
             { 
                 new: true 
             }
         );
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ message: "Failed to remove favorite recipe", error });
+        res.status(500).json({ message: "Failed to remove bookmark", error });
     }
 };
 

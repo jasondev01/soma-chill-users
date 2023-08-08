@@ -4,8 +4,6 @@ const {
     loginUser, 
     // findUser, 
     // getUsers, 
-    addFavoriteRecipe, 
-    removeFavoriteRecipe, 
     addBookmark,
     removeBookmark,
     addWatchedItem,
