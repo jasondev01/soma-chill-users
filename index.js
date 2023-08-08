@@ -6,8 +6,10 @@ const userRoute = require("./Routes/userRoute");
 const app = express(); // add extra capability
 require("dotenv").config(); 
 
+const origin = process.env.ORIGIN_URI;
+
 const corsOptions = {
-    origin: [process.env.ORIGIN_URI, "http://localhost:5173"],
+    origin: [origin, "http://localhost:5173"],
     credentials: true,
 };
 
