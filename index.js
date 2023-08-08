@@ -9,7 +9,7 @@ require("dotenv").config();
 const origin = process.env.ORIGIN_URI;
 
 const corsOptions = {
-    origin: [origin, "http://localhost:5173"],
+    origin: [`${origin}`, "http://localhost:5173"],
     credentials: true,
 };
 
