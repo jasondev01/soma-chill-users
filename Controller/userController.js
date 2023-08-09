@@ -2,6 +2,7 @@ const userModel = require("../Models/userModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
+const { body, validationResult } = require('express-validator');
 
 const createToken = (_id) => {
     const jwtkey = process.env.JWT_SECRET_KEY; // access the jwt_secret_key from .env
@@ -9,7 +10,18 @@ const createToken = (_id) => {
     return jwt.sign({ _id }, jwtkey, { expiresIn: "3days" })
 }
 
+const registerValidation = [
+    body('name').trim().isLength({ min: 3 }),
+    body('email').trim().isEmail(),
+    body('password').isStrongPassword()
+];
+
 const registerUser = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const { name, email, password } = req.body;
 
@@ -211,5 +223,6 @@ module.exports = {
     removeBookmark,
     addWatchedItem,
     removeWatchedItem,
-    addWatchedEpisode
+    addWatchedEpisode,
+    registerValidation,
 };

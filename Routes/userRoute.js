@@ -7,13 +7,14 @@ const {
     addBookmark,
     removeBookmark,
     addWatchedItem,
-    removeWatchedItem
+    removeWatchedItem,
+    registerValidation,
 } = require("../Controller/userController")
 
 // mini app or router
 const router = express.Router();
 
-router.post("/register", registerUser);
+router.post("/register", registerValidation, registerUser);
 router.post("/login", loginUser);
 // router.get("/find/:userId", findUser);
 // router.get("/", getUsers);
