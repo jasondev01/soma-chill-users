@@ -2,19 +2,12 @@ const userModel = require("../Models/userModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-const { body, validationResult } = require('express-validator');
 
 const createToken = (_id) => {
     const jwtkey = process.env.JWT_SECRET_KEY; // access the jwt_secret_key from .env
 
     return jwt.sign({ _id }, jwtkey, { expiresIn: "3days" })
 }
-
-const registerValidation = [
-    body('name').trim().isLength({ min: 3 }),
-    body('email').trim().isEmail(),
-    body('password').isStrongPassword()
-];
 
 const registerUser = async (req, res) => {
     const errors = validationResult(req);
@@ -108,7 +101,12 @@ const addBookmark = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Create a new bookmark object with the provided data
+        // check if the bookmarked resource belongs to the user
+        if (user._id.toString() !== userId) {
+            return res.status(403).json({ message: "Unauthorized access" });
+        }
+
+        // create a new bookmark object with the provided data
         const newBookmark = {
             slug,
             title,
@@ -175,7 +173,7 @@ const removeWatchedItem = async (req, res) => {
                 $pull: {
                     watched: watchedItemData
                 }
-            }, // Remove the watchedItemData from watched array
+            }, // remove the watchedItemData from watched array
             {
                 new: true
             }
@@ -196,14 +194,14 @@ const addWatchedEpisode = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Find the watched item by its ID
+        // find the watched item by its ID
         const watchedItem = user.watched.find(item => item.id === watchedItemId);
 
         if (!watchedItem) {
             return res.status(404).json({ message: "Watched item not found" });
         }
 
-        // Update the episodes array of the watched item with the new episode data
+        // update the episodes array of the watched item with the new episode data
         watchedItem.episodes.push(episodeData);
 
         await user.save();
@@ -224,5 +222,4 @@ module.exports = {
     addWatchedItem,
     removeWatchedItem,
     addWatchedEpisode,
-    registerValidation,
 };

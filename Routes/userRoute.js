@@ -14,7 +14,7 @@ const {
 // mini app or router
 const router = express.Router();
 
-router.post("/register", registerValidation, registerUser);
+router.post("/register", registerUser);
 router.post("/login", loginUser);
 // router.get("/find/:userId", findUser);
 // router.get("/", getUsers);
