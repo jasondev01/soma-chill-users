@@ -42,7 +42,6 @@ const registerUser = async (req, res) => {
         console.log(error);
         res.status(500).json(error); // sends error so that the server wont crush
     }
-    
 };
 
 const loginUser = async (req, res) => {
@@ -140,7 +139,7 @@ const removeBookmark = async (req, res) => {
 };
 
 const addWatchedItem = async (req, res) => {
-    const { userId, watchedItemData } = req.body;
+    const { userId, title, slug, image, episodeId, episodeNumber } = req.body;
 
     try {
         const user = await userModel.findById(userId);
@@ -149,7 +148,34 @@ const addWatchedItem = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        user.watched.push(watchedItemData);
+        // check if naa na sa wathced list
+        const existingWatchedItem = user.watched.find(item => item.slug === slug);
+
+        if (existingWatchedItem) {
+            // check if ang episode kay existing na
+            const existingEpisode = existingWatchedItem.episodes.find(episode => episode.id === episodeId);
+            
+            if (!existingEpisode) {
+                // episode with same id doesn't exist, add it to episodes array
+                existingWatchedItem.episodes.push({ 
+                    id: episodeId, 
+                    number: episodeNumber 
+                });
+            }
+        } else {
+            // anime doesn't exist in watched list, create a new watched item
+            const newWatchedItem = {
+                title,
+                slug,
+                image,
+                episodes: [{ 
+                    id: episodeId, 
+                    number: episodeNumber 
+                }]
+            };
+            user.watched.push(newWatchedItem);
+        }
+
         await user.save();
 
         res.status(200).json(user);
@@ -159,16 +185,16 @@ const addWatchedItem = async (req, res) => {
 };
 
 const removeWatchedItem = async (req, res) => {
-    const { userId, watchedItemData } = req.body;
+    const { userId, watchedItemId } = req.body;
 
     try {
         const user = await userModel.findByIdAndUpdate(
             userId,
             {
                 $pull: {
-                    watched: watchedItemData
+                    watched: { _id: watchedItemId }
                 }
-            }, // remove the watchedItemData from watched array
+            },
             {
                 new: true
             }
@@ -176,34 +202,6 @@ const removeWatchedItem = async (req, res) => {
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: "Failed to remove watched item", error });
-    }
-};
-
-const addWatchedEpisode = async (req, res) => {
-    const { userId, watchedItemId, episodeData } = req.body;
-
-    try {
-        const user = await userModel.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // find the watched item by its ID
-        const watchedItem = user.watched.find(item => item.id === watchedItemId);
-
-        if (!watchedItem) {
-            return res.status(404).json({ message: "Watched item not found" });
-        }
-
-        // update the episodes array of the watched item with the new episode data
-        watchedItem.episodes.push(episodeData);
-
-        await user.save();
-
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: "Failed to add watched episode", error });
     }
 };
 
@@ -216,5 +214,4 @@ module.exports = {
     removeBookmark,
     addWatchedItem,
     removeWatchedItem,
-    addWatchedEpisode,
 };

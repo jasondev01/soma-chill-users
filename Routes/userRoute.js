@@ -20,6 +20,6 @@ router.post("/login", loginUser);
 router.post("/add-bookmark", addBookmark); 
 router.post("/remove-bookmark", removeBookmark); 
 router.post("/add-watched", addWatchedItem); 
-router.post("/remove-watched", removeWatchedItem); 
+router.post("/remove-watched", removeWatchedItem);
 
 module.exports = router;
