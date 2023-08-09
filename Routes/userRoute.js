@@ -8,7 +8,6 @@ const {
     removeBookmark,
     addWatchedItem,
     removeWatchedItem,
-    registerValidation,
 } = require("../Controller/userController")
 
 // mini app or router

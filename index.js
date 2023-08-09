@@ -3,20 +3,20 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const userRoute = require("./Routes/userRoute");
 
-const app = express(); // add extra capability
+const app = express(); 
 require("dotenv").config(); 
 
 const corsOptions = {
-    origin: ["https://soma-chill.vercel.app", "http://localhost:5173"],
+    origin: ["https://soma-chill.vercel.app", "http://localhost:5173", "https://soma-chill.vercel.app/register"],
     credentials: true,
 };
 
-// api routes // middlewares
+// api route origin
 app.use(express.json());
 app.use(cors(corsOptions)); 
 app.use("/api/users", userRoute);
 
-// root route
+// root 
 app.get("/", (req, res) => {
     res.send("Kindly give a star to this repository before forking. Thanks!");
 });
