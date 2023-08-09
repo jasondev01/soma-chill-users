@@ -6,8 +6,10 @@ const userRoute = require("./Routes/userRoute");
 const app = express(); 
 require("dotenv").config(); 
 
+const originUri = process.env.ORIGIN_URI
+
 const corsOptions = {
-    origin: ["https://soma-chill.vercel.app", "http://localhost:5173", "https://soma-chill.vercel.app/register"],
+    origin: [originUri, "http://localhost:5173"],
     credentials: true,
 };
 
