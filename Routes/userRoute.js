@@ -2,8 +2,8 @@ const express = require("express");
 const { 
     registerUser, 
     loginUser, 
-    // findUser, 
-    // getUsers, 
+    findUser, 
+    getUsers, 
     addBookmark,
     removeBookmark,
     addWatchedItem,
@@ -15,8 +15,8 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
-// router.get("/find/:userId", findUser);
-// router.get("/", getUsers);
+router.get("/find/:userId", findUser);
+router.get("/", getUsers);
 router.post("/add-bookmark", addBookmark); 
 router.post("/remove-bookmark", removeBookmark); 
 router.post("/add-watched", addWatchedItem); 
