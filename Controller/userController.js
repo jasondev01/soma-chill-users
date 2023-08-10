@@ -57,7 +57,7 @@ const loginUser = async (req, res) => {
             return res.status(400).json("Invalid email or password");  // checks if the password is the same as in the database with that email
         }
         const token = createToken(user._id); // creates a jsonwebtoken
-        res.status(200).json({_id: user._id, name: user.name, email, bookmarked: user.bookmarked, token});
+        res.status(200).json({_id: user._id, name: user.name, email, bookmarked: user.bookmarked, watched: user.watched, token});
     } catch(error) {
         console.log(error)
         res.status(500).json(error); // sends error so that the server wont crush
@@ -86,7 +86,7 @@ const getUsers = async (req, res) => {
 }
 
 const addBookmark = async (req, res) => {
-    const { userId, slug, title, currentEpisode, currentEpisodeId, image } = req.body;
+    const { userId, slug, title, currentEpisode, image } = req.body;
   
     try {
         const user = await userModel.findById(userId);
