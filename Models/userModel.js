@@ -41,8 +41,16 @@ const userSchema = new mongoose.Schema({
             }]
         }],
         default: []
+    },
+    profile: {
+        type: {
+            image: String,
+            wallpaper: String,
+            username: String,
+            nickname: String,
+            toggleNews: Boolean
+        }
     }
-    
 }, {
     timestamps: true,
 });

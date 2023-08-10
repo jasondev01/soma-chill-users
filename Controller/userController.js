@@ -48,7 +48,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        let user = await userModel.findOne({ email }).populate('bookmarked').populate('watched'); // find the email
+        let user = await userModel.findOne({ email }).populate('bookmarked').populate('watched').populate('profile'); // find the email
         if (!user) {
             return res.status(400).json("Invalid email or password"); // checks if there is a user with that email else error
         }
@@ -57,7 +57,7 @@ const loginUser = async (req, res) => {
             return res.status(400).json("Invalid email or password");  // checks if the password is the same as in the database with that email
         }
         const token = createToken(user._id); // creates a jsonwebtoken
-        res.status(200).json({_id: user._id, name: user.name, email, bookmarked: user.bookmarked, watched: user.watched, token});
+        res.status(200).json({_id: user._id, name: user.name, email, bookmarked: user.bookmarked, watched: user.watched, profile: user.profile, token});
     } catch(error) {
         console.log(error)
         res.status(500).json(error); // sends error so that the server wont crush
@@ -67,7 +67,7 @@ const loginUser = async (req, res) => {
 const findUser = async (req, res) => {
     const userId = req.params.userId; // paramater from request (get)
     try {
-        const user = await userModel.findById(userId).populate('bookmarked').populate('watched'); // finds user by id
+        const user = await userModel.findById(userId).populate('bookmarked').populate('watched').populate('profile'); // finds user by id
         res.status(200).json(user);
     } catch(error) {
         console.log(error)
@@ -205,6 +205,41 @@ const removeWatchedItem = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) => {
+    const { userId, image, wallpaper, nickname, username, toggleNews } = req.body;
+
+    try {
+        const updatedProfileData = {
+            image,
+            wallpaper,
+            username,
+            nickname,
+            toggleNews
+        };
+
+        const user = await userModel.findByIdAndUpdate(
+            userId, 
+            { 
+                $set: { 
+                    profile: updatedProfileData 
+                } 
+            },
+            { 
+                new: true 
+            }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.status(200).json({ message: 'Profile updated successfully', user });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while updating the profile' });
+    }
+};
+
 module.exports = { 
     registerUser, 
     loginUser, 
@@ -214,4 +249,5 @@ module.exports = {
     removeBookmark,
     addWatchedItem,
     removeWatchedItem,
+    updateProfile,
 };

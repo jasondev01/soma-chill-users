@@ -8,6 +8,7 @@ const {
     removeBookmark,
     addWatchedItem,
     removeWatchedItem,
+    updateProfile
 } = require("../Controller/userController")
 
 // mini app or router
@@ -21,5 +22,6 @@ router.post("/add-bookmark", addBookmark);
 router.post("/remove-bookmark", removeBookmark); 
 router.post("/add-watched", addWatchedItem); 
 router.post("/remove-watched", removeWatchedItem);
+router.post("/update-profile", updateProfile); 
 
 module.exports = router;
