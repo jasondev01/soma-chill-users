@@ -85,6 +85,8 @@ const getUsers = async (req, res) => {
     }
 }
 
+
+
 const addBookmark = async (req, res) => {
     const { userId, slug, title, currentEpisode, image } = req.body;
   
@@ -240,6 +242,21 @@ const updateProfile = async (req, res) => {
     }
 };
 
+const getUsersCount = async (req, res) => {
+    const { userId, email, secretKey } = req.body
+    try {
+        if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
+            return res.status(500).json({ message: 'Not the right creds' });
+        }
+
+        const count = await userModel.countDocuments();
+        return res.status(200).json({ message: 'Email, User ID and Secret Key is verified to be the admin', count });
+    } catch (error) {
+        console.error('Error fetching user count:', error);
+        return res.status(500).json({ message: 'An error occurred while tallying the users' });
+    }
+};
+
 module.exports = { 
     registerUser, 
     loginUser, 
@@ -250,4 +267,5 @@ module.exports = {
     addWatchedItem,
     removeWatchedItem,
     updateProfile,
+    getUsersCount,
 };

@@ -8,7 +8,9 @@ const {
     removeBookmark,
     addWatchedItem,
     removeWatchedItem,
-    updateProfile
+    updateProfile,
+    getUsersCount,
+    // getCountUsers
 } = require("../Controller/userController")
 
 // mini app or router
@@ -18,10 +20,12 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 // router.get("/find/:userId", findUser);
 // router.get("/", getUsers);
+// router.get("/", getCountUsers); -> simpler
 router.post("/add-bookmark", addBookmark); 
 router.post("/remove-bookmark", removeBookmark); 
 router.post("/add-watched", addWatchedItem); 
 router.post("/remove-watched", removeWatchedItem);
 router.post("/update-profile", updateProfile); 
+router.post("/user-count", getUsersCount); 
 
 module.exports = router;
