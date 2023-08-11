@@ -210,11 +210,11 @@ const updateProfile = async (req, res) => {
 
     try {
         const updatedProfileData = {
-            image,
-            wallpaper,
-            username,
-            nickname,
-            toggleNews
+            image: image,
+            wallpaper: wallpaper,
+            nickname: nickname,
+            username: username,
+            toggleNews: toggleNews
         };
 
         const user = await userModel.findByIdAndUpdate(
