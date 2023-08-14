@@ -246,14 +246,25 @@ const getUsersCount = async (req, res) => {
     const { userId, email, secretKey } = req.body
     try {
         if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
-            return res.status(500).json({ message: 'Not the right creds' });
+            return res.status(500).json({
+                status: 500, 
+                message: 'Unauthorized',
+        });
         }
 
         const count = await userModel.countDocuments();
-        return res.status(200).json({ message: 'Email, User ID and Secret Key is verified to be the admin', count });
+        return res.status(200).json({
+            status: 200,
+            message: 'Authorized: Welcome Dev!', 
+            count 
+    });
     } catch (error) {
         console.error('Error fetching user count:', error);
-        return res.status(500).json({ message: 'An error occurred while tallying the users' });
+        return res.status(500).json({ 
+            status: 500, 
+            message: 'An error occurred while tallying the users',
+            error
+    });
     }
 };
 
