@@ -25,7 +25,7 @@ const registerUser = async (req, res) => {
             return res.status(400).json("Email must be a valid email"); // validates emaill
         }
         if(!validator.isStrongPassword(password)) {
-            return res.status(400).json("Password must be a strong password"); // validates emaill
+            return res.status(400).json("Password must be 8 characters long, have an uppercase, a number, and a special character"); // validates password
         }
         if (name.length < 3 ) {
             return res.status(400).json("Name must be three characters or longer")
