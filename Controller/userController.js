@@ -76,7 +76,14 @@ const findUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
+    const { userId, email, secretKey } = req.body
     try {
+        if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
+            return res.status(500).json({
+                status: 500, 
+                message: 'Unauthorized',
+            });
+        }
         const users = await userModel.find(); // gets all the users
         res.status(200).json(users);
     } catch(error) {
@@ -241,7 +248,7 @@ const updateProfile = async (req, res) => {
 };
 
 const getUsersCount = async (req, res) => {
-    const { userId, email, secretKey } = req.body
+    const { userId, email, secretKey } = req.body;
     try {
         if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
             return res.status(500).json({
