@@ -9,7 +9,7 @@ const {
     addWatchedItem,
     removeWatchedItem,
     updateProfile,
-    getUsersCount,
+    // getUsersCount,
     // getCountUsers
 } = require("../Controller/userController")
 
@@ -26,6 +26,6 @@ router.post("/remove-bookmark", removeBookmark);
 router.post("/add-watched", addWatchedItem); 
 router.post("/remove-watched", removeWatchedItem);
 router.post("/update-profile", updateProfile); 
-router.post("/user-count", getUsersCount); 
+// router.post("/user-count", getUsersCount); 
 
 module.exports = router;
