@@ -76,7 +76,7 @@ const findUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
-    const { userId, email, secretKey } = req.body
+    const { userId, email, secretKey } = req.body;
     try {
         if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
             return res.status(500).json({
