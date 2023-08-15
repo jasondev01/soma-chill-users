@@ -76,20 +76,9 @@ const findUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
-    const { userId, email, secretKey } = req.body;
     try {
-        if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
-            return res.status(500).json({
-                status: 500, 
-                message: 'Unauthorized',
-            });
-        }
         const users = await userModel.find(); // gets all the users
-        return res.status(200).json({
-            status: 200,
-            message: 'Authorized: Welcome Dev!', 
-            users 
-        });
+        res.status(200).json(users);
     } catch(error) {
         console.log(error)
         res.status(500).json(error); // sends error so that the server wont crush
