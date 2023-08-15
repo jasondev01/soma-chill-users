@@ -76,7 +76,14 @@ const findUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
+    const { userId, email, secretKey } = req.body
     try {
+        if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
+            return res.status(500).json({
+                status: 500, 
+                message: 'Unauthorized',
+            });
+        }
         const users = await userModel.find(); // gets all the users
         res.status(200).json(users);
     } catch(error) {
@@ -84,8 +91,6 @@ const getUsers = async (req, res) => {
         res.status(500).json(error); // sends error so that the server wont crush
     }
 }
-
-
 
 const addBookmark = async (req, res) => {
     const { userId, slug, title, currentEpisode, image } = req.body;
@@ -249,7 +254,7 @@ const getUsersCount = async (req, res) => {
             return res.status(500).json({
                 status: 500, 
                 message: 'Unauthorized',
-        });
+            });
         }
 
         const count = await userModel.countDocuments();
