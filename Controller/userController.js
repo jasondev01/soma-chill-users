@@ -2,7 +2,6 @@ const userModel = require("../Models/userModel");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-require("dotenv").config(); 
 
 const createToken = (_id) => {
     const jwtkey = process.env.JWT_SECRET_KEY; // access the jwt_secret_key from .env
@@ -86,7 +85,11 @@ const getUsers = async (req, res) => {
             });
         }
         const users = await userModel.find(); // gets all the users
-        res.status(200).json(users);
+        return res.status(200).json({
+            status: 200,
+            message: 'Authorized: Welcome Dev!', 
+            users 
+        });
     } catch(error) {
         console.log(error)
         res.status(500).json(error); // sends error so that the server wont crush
@@ -263,7 +266,7 @@ const getUsersCount = async (req, res) => {
             status: 200,
             message: 'Authorized: Welcome Dev!', 
             count 
-    });
+        });
     } catch (error) {
         console.error('Error fetching user count:', error);
         return res.status(500).json({ 
