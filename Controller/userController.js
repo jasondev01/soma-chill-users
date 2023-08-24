@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 const createToken = (_id) => {
     const jwtkey = process.env.JWT_SECRET_KEY; // access the jwt_secret_key from .env
 
-    return jwt.sign({ _id }, jwtkey, { expiresIn: "3days" })
+    return jwt.sign({ _id }, jwtkey, { expiresIn: "2days" })
 }
 
 const registerUser = async (req, res) => {
@@ -37,7 +37,12 @@ const registerUser = async (req, res) => {
         await user.save(); // saves the user to the database 
 
         const token = createToken(user._id); // creates a token
-        res.status(200).json({_id: user._id, name, email, token}); 
+        res.status(200).json({
+            _id: user._id, 
+            name, 
+            email, 
+            token
+        }); 
     } catch(error) {
         console.log(error);
         res.status(500).json(error); // sends error so that the server wont crush
@@ -57,7 +62,15 @@ const loginUser = async (req, res) => {
             return res.status(400).json("Invalid email or password");  // checks if the password is the same as in the database with that email
         }
         const token = createToken(user._id); // creates a jsonwebtoken
-        res.status(200).json({_id: user._id, name: user.name, email, bookmarked: user.bookmarked, watched: user.watched, profile: user.profile, token});
+        res.status(200).json({ 
+            _id: user._id,
+            name: user.name, 
+            email, 
+            bookmarked: user.bookmarked, 
+            watched: user.watched,
+            profile: user.profile, 
+            token
+        });
     } catch(error) {
         console.log(error)
         res.status(500).json(error); // sends error so that the server wont crush
@@ -76,7 +89,7 @@ const findUser = async (req, res) => {
 }
 
 const getUsers = async (req, res) => {
-    const { userId, email, secretKey } = req.body
+    const { userId, email, secretKey } = req.body;
     try {
         if (userId !== process.env.ADMIN_ID || email !== process.env.ADMIN_EMAIL || secretKey !== process.env.ADMIN_KEY) {
             return res.status(500).json({
