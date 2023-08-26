@@ -38,6 +38,8 @@ const episodeSourceSchema = new mongoose.Schema({
 // Define the Main Schema
 const dataSchema = new mongoose.Schema({
     airedAt: Date,
+    createdAt: Date,
+    updatedAt: Date,
     anime: animeSchema,
     animeId: String,
     id: String,

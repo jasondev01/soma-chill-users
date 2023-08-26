@@ -15,25 +15,26 @@ const fetchAndUpdate = async () => {
             newSeasonArray.push(infoResponse.data);
         }
 
-        console.log(newSeasonArray)
         for (const item of newSeasonArray) {
-            const existingAnime = await newSeasonModel.findOne({
-                $or: [
-                    { 'slug': item.slug },
-                    { 'anilistId': item.anilistId },
-                    { 'id': item.id },
-                ],
-            });
-
-            if (!existingAnime) {
-                await newSeasonModel.create(item); // create a new document if no match is found
-            } else {
-                // update the existing document with changes
-                await newSeasonModel.findOneAndUpdate(
-                    { _id: existingAnime._id },
-                    item,
-                    { new: true }
-                );
+            if (item.countryOfOrigin !== 'CN') {
+                const existingAnime = await newSeasonModel.findOne({
+                    $or: [
+                        { 'slug': item.slug },
+                        { 'anilistId': item.anilistId },
+                        { 'id': item.id },
+                    ],
+                });
+    
+                if (!existingAnime) {
+                    await newSeasonModel.create(item); // create a new document if no match is found
+                } else {
+                    // update the existing document with changes
+                    await newSeasonModel.findOneAndUpdate(
+                        { _id: existingAnime._id },
+                        item,
+                        { new: true }
+                    );
+                }
             }
         }
 
@@ -43,8 +44,8 @@ const fetchAndUpdate = async () => {
     }
 };
 
-// fetch every 12hours
-cron.schedule('0 */12 * * *', () => {
+// fetch every 1hours
+cron.schedule('0 */1 * * *', () => {
     fetchAndUpdate();
 });
 

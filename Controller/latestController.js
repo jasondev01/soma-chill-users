@@ -6,33 +6,35 @@ const fetchAndUpdate = async () => {
     const baseUrl = process.env.ANIME_URL;
     try {
         // fetch
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=30`);
+        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
         console.log(response.data.data)
 
         // loop through the data and update/create instances in the database
         for (const animeData of response.data.data) {
-            const existingAnime = await latestModel.findOne({
-                $or: [
-                    { 'anime.slug': animeData.anime.slug },
-                    { 'anime.anilistId': animeData.anime.anilistId },
-                    { 'anime.id': animeData.anime.id },
-                    { 'animeId': animeData.animeId },
-                ],
-            });
-
-            if (!existingAnime) {
-                await latestModel.create(animeData); // create a new document if no match is found
-            } else {
-                // update the existing document with changes
-                await latestModel.findOneAndUpdate(
-                    { _id: existingAnime._id },
-                    animeData,
-                    { new: true }
-                );
+            if (animeData.anime.countryOfOrigin !== 'CN') {
+                const existingAnime = await latestModel.findOne({
+                    $or: [
+                        { 'anime.slug': animeData.anime.slug },
+                        { 'anime.anilistId': animeData.anime.anilistId },
+                        { 'anime.id': animeData.anime.id },
+                        { 'animeId': animeData.animeId },
+                    ],
+                });
+    
+                if (!existingAnime) {
+                    await latestModel.create(animeData); // create a new document if no match is found
+                } else {
+                    // update the existing document with changes
+                    await latestModel.findOneAndUpdate(
+                        { _id: existingAnime._id },
+                        animeData,
+                        { new: true }
+                    );
+                    console.log('Latest Data updated successfully.');
+                }
             }
         }
 
-        console.log('Latest Data updated successfully.');
     } catch (error) {
         console.log('Error updating data:', error);
     }
@@ -46,10 +48,17 @@ cron.schedule('0 */1 * * *', () => {
 const getLatest = async (req, res) => {
     try {
         const animes = await latestModel.find();
-        res.status(200).json(animes);
+        const sortDesc = animes.sort((a, b) => new Date(b.airedAt) - new Date(a.airedAt))
+        res.status(200).json({
+            'status': 200,
+            'data': sortDesc
+        });
     } catch(error) {
         console.log(error)
-        res.status(500).json(error); 
+        res.status(500).json({
+            'status': 500,
+            'message': 'An error occured while retrieving data' 
+        }); 
     }
 }
 
