@@ -25,7 +25,7 @@ app.use("/api/", latestRoute, popularRoute, heroRoute, newSeasonRoute)
 
 // root 
 app.get("/", (req, res) => {
-    res.send("Kindly give a star to this repository before forking. Thanks!");
+    res.send("Welcome to somadb!");
 });
 
 const port = process.env.PORT || 5000;
