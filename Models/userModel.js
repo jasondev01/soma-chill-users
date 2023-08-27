@@ -24,10 +24,6 @@ const bookmarkedSchema = new mongoose.Schema({
     currentEpisode: Number,
 })
 
-const profileSchema = new mongoose.Schema({
-
-})
-
 const userSchema = new mongoose.Schema({
     name: {
         type: String, 

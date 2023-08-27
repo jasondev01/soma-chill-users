@@ -6,7 +6,7 @@ const fetchAndUpdate = async () => {
     const baseUrl = process.env.ANIME_URL;
     try {
         // fetch
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
+        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=30`);
 
         // loop through the data and update/create instances in the database
         for (const animeData of response.data.data) {
@@ -29,10 +29,10 @@ const fetchAndUpdate = async () => {
                         animeData,
                         { new: true }
                     );
+                    console.log('Latest Data updated successfully.');
                 }
             }
         }
-        console.log('Latest Data updated successfully.');
     } catch (error) {
         console.log('Error updating data:', error);
     }
@@ -50,11 +50,13 @@ const getLatest = async (req, res) => {
         const animes = await latestModel.find();
         if (animes.length === 0) return res.status(200).json({ data:[] })
 
+        console.log(animes.length)
         const sortDesc = animes.sort((a, b) => new Date(b.airedAt) - new Date(a.airedAt))
         res.status(200).json({
             status: 200,
             data: sortDesc
         });
+
     } catch(error) {
         console.log(error)
         res.status(500).json({
