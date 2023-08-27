@@ -29,18 +29,17 @@ const fetchAndUpdate = async () => {
                         animeData,
                         { new: true }
                     );
-                    console.log('Latest Data updated successfully.');
                 }
             }
         }
-
+        console.log('Latest Data updated successfully.');
     } catch (error) {
         console.log('Error updating data:', error);
     }
 };
 
 // fetch every 1hour
-cron.schedule('0 */1 * * *', () => {
+cron.schedule('* * * * *', () => {
     fetchAndUpdate();
 });
 
