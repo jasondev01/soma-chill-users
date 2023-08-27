@@ -7,6 +7,6 @@ const {
 const router = express.Router();
 
 router.get("/", fetchAndUpdate);
-router.get("/new-season", getNewSeason);
+router.post("/new-season", getNewSeason);
 
 module.exports = router;

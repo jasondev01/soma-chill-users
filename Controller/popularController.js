@@ -32,18 +32,20 @@ const fetchAndUpdate = async () => {
             }
         }
 
-        console.log('Data updated successfully.');
+        console.log('Popular Data updated successfully.');
     } catch (error) {
         console.log('Error updating data:', error);
     }
 };
 
-// fetch every 10hours
-cron.schedule('0 */10 * * *', () => {
+// fetch every 1hour
+cron.schedule('0 */1 * * *', () => {
     fetchAndUpdate();
 });
 
 const getPopular = async (req, res) => {
+    const { restSecret } = req.body;
+    if (restSecret !== process.env.REST_SECRET) return res.status(500).json({ 'message': 'Unauthorized' });
     try {
         const animes = await popularModel.find(); 
         res.status(200).json(animes);

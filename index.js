@@ -6,6 +6,7 @@ const latestRoute = require("./Routes/latestRoute")
 const popularRoute = require("./Routes/popularRoute")
 const heroRoute = require("./Routes/heroRoute")
 const newSeasonRoute = require("./Routes/newSeasonRoute")
+const infoRoute = require("./Routes/infoRoute")
 
 const app = express(); 
 require("dotenv").config(); 
@@ -21,7 +22,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions)); 
 app.use("/api/users", userRoute);
-app.use("/api/", latestRoute, popularRoute, heroRoute, newSeasonRoute)
+app.use("/api/", latestRoute, popularRoute, heroRoute, newSeasonRoute, infoRoute)
 
 // root 
 app.get("/", (req, res) => {

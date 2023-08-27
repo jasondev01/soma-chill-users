@@ -7,7 +7,6 @@ const fetchAndUpdate = async () => {
     try {
         // fetch
         const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
-        console.log(response.data.data)
 
         // loop through the data and update/create instances in the database
         for (const animeData of response.data.data) {
@@ -40,24 +39,28 @@ const fetchAndUpdate = async () => {
     }
 };
 
-// fetch every hour
+// fetch every 1hour
 cron.schedule('0 */1 * * *', () => {
     fetchAndUpdate();
 });
 
 const getLatest = async (req, res) => {
+    const { restSecret } = req.body;
+    if (restSecret !== process.env.REST_SECRET) return res.status(500).json({ 'message': 'Unauthorized' });
     try {
         const animes = await latestModel.find();
+        if (animes.length === 0) return res.status(200).json({ data:[] })
+
         const sortDesc = animes.sort((a, b) => new Date(b.airedAt) - new Date(a.airedAt))
         res.status(200).json({
-            'status': 200,
-            'data': sortDesc
+            status: 200,
+            data: sortDesc
         });
     } catch(error) {
         console.log(error)
         res.status(500).json({
-            'status': 500,
-            'message': 'An error occured while retrieving data' 
+            status: 500,
+            message: 'An error occured while retrieving data' 
         }); 
     }
 }

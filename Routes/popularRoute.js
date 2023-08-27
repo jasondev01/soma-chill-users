@@ -7,6 +7,6 @@ const {
 const router = express.Router();
 
 router.get("/", fetchAndUpdate);
-router.get("/popular", getPopular);
+router.post("/popular", getPopular);
 
 module.exports = router;

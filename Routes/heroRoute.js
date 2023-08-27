@@ -7,6 +7,6 @@ const {
 const router = express.Router();
 
 router.get("/", fetchAndUpdate);
-router.get("/hero", getHero);
+router.post("/hero", getHero);
 
 module.exports = router;

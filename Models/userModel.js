@@ -1,6 +1,33 @@
 const mongoose = require("mongoose");
 
 // schema to save documents
+
+const episodeSchema = new mongoose.Schema({
+    id: String,
+    number: Number,
+    watchedAt: Date,
+});
+
+const watchedItemSchema = new mongoose.Schema({
+    title: String,
+    slug: String,
+    image: String,
+    episodes: [episodeSchema],
+    updatedAt: Date,
+    createdAt: { type: Date, default: Date.now }
+});
+
+const bookmarkedSchema = new mongoose.Schema({
+    title: String,
+    slug: String,
+    image: String,
+    currentEpisode: Number,
+})
+
+const profileSchema = new mongoose.Schema({
+
+})
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String, 
@@ -21,36 +48,23 @@ const userSchema = new mongoose.Schema({
         minlength: 5,
         maxlength: 1024,
     },
-    bookmarked: {
-        type: [{
-            title: String,
-            slug: String,
-            image: String,
-            currentEpisode: Number,
-        }],
-        default: [],
-    },
-    watched: {
-        type: [{
-            title: String,
-            slug: String,
-            image: String,
-            episodes: [{
-                id: String,
-                number: Number
-            }]
-        }],
-        default: []
-    },
+    bookmarked: [bookmarkedSchema],
+    watched: [watchedItemSchema],
     profile: {
-        type: {
-            image: String,
-            wallpaper: String,
-            username: String,
-            nickname: String,
-            toggleNews: Boolean
-        }
-    }
+        image: String,
+        wallpaper: String,
+        username: String,
+        nickname: String,
+        toggleNews: Boolean
+    },
+    username: {
+        type: String,
+        required: false,
+        minlength: 3,
+        maxlength: 30,
+        unique: true,
+    },
+    totalWatched: { type: Number, default: null},
 }, {
     timestamps: true,
 });

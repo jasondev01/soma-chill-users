@@ -1,6 +1,7 @@
 const heroModel = require("../Models/heroModel"); 
 const axios = require('axios');
 const cron = require('node-cron');
+const infoModel = require("../Models/infoModel");
 
 const fetchAndUpdate = async () => {
     const baseUrl = process.env.ANIME_URL;
@@ -26,7 +27,16 @@ const fetchAndUpdate = async () => {
                 ],
             });
 
-            if (!existingAnime) {
+            const existingAnimeInfo = await infoModel.findOne({
+                $or: [
+                    { 'slug': item.slug },
+                    { 'anilistId': item.anilistId },
+                    { 'id': item.id },
+                ],
+            })
+
+            if (!existingAnime || !existingAnimeInfo) {
+                await infoModel.create(item)
                 await heroModel.create(item); // Create a new document if no match is found
             } else {
                 // Update the existing document with changes
@@ -35,24 +45,37 @@ const fetchAndUpdate = async () => {
                     item,
                     { new: true }
                 );
+
+                await infoModel.findByIdAndUpdate(
+                    { _id: existingAnimeInfo._id },
+                    item,
+                    { new: true }
+                )
             }
         }
 
-        console.log('Data updated successfully.');
+        console.log('Hero Data updated successfully.');
     } catch (error) {
         console.log('Error updating data:', error);
     }
 };
 
-// fetch every 10hours
-cron.schedule('0 */10 * * *', () => {
+// fetch every 2hours
+cron.schedule('0 */1 * * *', () => {
     fetchAndUpdate();
 });
 
 const getHero = async (req, res) => {
+    const { restSecret } = req.body;
+    if (restSecret !== process.env.REST_SECRET) return res.status(500).json({ 'message': 'Unauthorized' });
     try {
         const animes = await heroModel.find(); 
-        res.status(200).json(animes);
+        if (animes.length === 0) return res.status(200).json({ data:[] })
+
+        res.status(200).json({
+            status: 200,
+            data: animes
+        });
     } catch(error) {
         console.log(error)
         res.status(500).json(error); 
