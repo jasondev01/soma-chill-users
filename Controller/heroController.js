@@ -60,8 +60,8 @@ const fetchAndUpdate = async () => {
     }
 };
 
-// fetch every 2hours
-cron.schedule('0 */1 * * *', () => {
+// fetch every 1hour and 30 mins
+cron.schedule('30 */1 * * *', () => {
     fetchAndUpdate();
 });
 
