@@ -60,7 +60,7 @@ const fetchAndUpdate = async () => {
     }
 };
 
-// fetch every 1hour and 30 mins
+// fetch every 1.5hours
 cron.schedule('30 */1 * * *', () => {
     fetchAndUpdate();
 });

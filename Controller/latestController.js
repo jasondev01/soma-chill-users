@@ -1,15 +1,18 @@
 const latestModel = require("../Models/latestModel"); 
 const axios = require('axios');
-const cron = require('node-cron');
+const cron = require('node-cron')
 
-const fetchAndUpdate = async () => {
+const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
     try {
         // fetch
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=30`);
+        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
+        const latestArray = response.data.data;
+
+        const sortLatest = [...latestArray].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
         // loop through the data and update/create instances in the database
-        for (const animeData of response.data.data) {
+        for (const animeData of sortLatest) {
             if (animeData.anime.countryOfOrigin !== 'CN') {
                 const existingAnime = await latestModel.findOne({
                     $or: [
@@ -33,6 +36,8 @@ const fetchAndUpdate = async () => {
                 }
             }
         }
+        console.log('Latest Updated')
+        res.status(200).json('Updated');
     } catch (error) {
         console.log('Error updating data:', error);
     }
@@ -50,8 +55,7 @@ const getLatest = async (req, res) => {
         const animes = await latestModel.find();
         if (animes.length === 0) return res.status(200).json({ data:[] })
 
-        console.log(animes.length)
-        const sortDesc = animes.sort((a, b) => new Date(b.airedAt) - new Date(a.airedAt))
+        const sortDesc = [...animes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         res.status(200).json({
             status: 200,
             data: sortDesc
@@ -61,7 +65,7 @@ const getLatest = async (req, res) => {
         console.log(error)
         res.status(500).json({
             status: 500,
-            message: 'An error occured while retrieving data' 
+            message: 'An error occured while retrieving data'
         }); 
     }
 }

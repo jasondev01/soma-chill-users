@@ -9,7 +9,6 @@ const fetchInfoOrUpdate = async (req, res) => {
 
         if (!existingAnime) {
             const response = await axios.get(`${baseUrl}/anime/${slug}`);
-            // console.log(response.data)
 
             const createDocument = await infoModel.create(response.data);
             console.log('Info Data created successfully')
@@ -20,8 +19,8 @@ const fetchInfoOrUpdate = async (req, res) => {
 
             const response = await axios.get(`${baseUrl}/anime/${slug}`);
             await infoModel.findOneAndUpdate(
-                { 'slug': slug },
-                response.data,
+                { 'slug': slug }, // find by using slug
+                response.data, // data
                 { new: true }
             );
 
@@ -29,7 +28,7 @@ const fetchInfoOrUpdate = async (req, res) => {
 
         }
     } catch (error) {
-        console.log('Error updating data:', error);
+        console.log('Error updating data: Error');
     }
 };
 

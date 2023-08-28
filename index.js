@@ -21,8 +21,19 @@ const corsOptions = {
 // api route origin
 app.use(express.json());
 app.use(cors(corsOptions)); 
+
+// user login, regsiter, admin right
 app.use("/api/users", userRoute);
-app.use("/api/", latestRoute, popularRoute, heroRoute, newSeasonRoute, infoRoute)
+
+// rest api
+app.use(
+
+    "/api/",    latestRoute, 
+                popularRoute, 
+                heroRoute, 
+                newSeasonRoute, 
+                infoRoute
+)
 
 // root 
 app.get("/", (req, res) => {
