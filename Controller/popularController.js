@@ -7,7 +7,6 @@ const fetchAndUpdate = async () => {
     try {
         // fetch
         const response = await axios.get(`${baseUrl}/popular?page=1&perPage=30`);
-        console.log(response.data.data)
 
         // loop through the data and update/create instances in the database
         for (const animeData of response.data.data) {

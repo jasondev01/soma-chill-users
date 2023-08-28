@@ -2,7 +2,7 @@ const latestModel = require("../Models/latestModel");
 const axios = require('axios');
 const cron = require('node-cron')
 
-const fetchAndUpdate = async (req, res) => {
+const fetchAndUpdate = async () => {
     const baseUrl = process.env.ANIME_URL;
     try {
         // fetch
@@ -37,7 +37,6 @@ const fetchAndUpdate = async (req, res) => {
             }
         }
         console.log('Latest Updated')
-        res.status(200).json('Updated');
     } catch (error) {
         console.log('Error updating data:', error);
     }
