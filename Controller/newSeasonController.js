@@ -61,7 +61,7 @@ const fetchAndUpdate = async () => {
 };
 
 // fetch every 2hours
-cron.schedule('0 */2 * * *', () => {
+cron.schedule('20 */2 * * *', () => {
     fetchAndUpdate();
 });
 
