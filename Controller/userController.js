@@ -225,8 +225,7 @@ const addWatchedItem = async (req, res) => {
             };
             user.watched.push(newWatchedItem);
         }
-        user.totalWatched += 1;
-
+        user.totalWatched++;
 
         await user.save();
 

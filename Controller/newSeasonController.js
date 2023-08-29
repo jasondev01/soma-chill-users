@@ -3,8 +3,10 @@ const infoModel = require("../Models/infoModel")
 const axios = require('axios');
 const cron = require('node-cron');
 
-const fetchAndUpdate = async () => {
+const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
+    const { admin } = req.body;
+    if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
     try {
         // fetch 
         const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
@@ -53,7 +55,7 @@ const fetchAndUpdate = async () => {
                 }
             }
         }
-
+        res.status(200).json("Updated")
         console.log('New Season Data updated successfully.');
     } catch (error) {
         console.log('Error updating data:', error);
