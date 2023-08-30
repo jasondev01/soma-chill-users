@@ -40,7 +40,7 @@ const fetchAndUpdate = async (req, res) => {
                 }
             }
         }
-        res.status(200).json("Updated")
+        // res.status(200).json("Updated")
         console.log('Latest Updated')
     } catch (error) {
         // res.status(500).json("An error occured while updating, please try again later.")
