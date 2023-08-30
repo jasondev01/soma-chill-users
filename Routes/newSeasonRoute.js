@@ -6,7 +6,7 @@ const {
 
 const router = express.Router();
 
-router.post("/update-newseason", fetchAndUpdate);
+router.get("/update-newseason", fetchAndUpdate);
 router.post("/new-season", getNewSeason);
 
 module.exports = router;
