@@ -4,6 +4,7 @@ const cron = require('node-cron')
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
+    console.log('Latest Controller Body: ', req.body);    
     const { admin } = req.body;
     if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
     try {

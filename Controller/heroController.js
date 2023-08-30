@@ -5,6 +5,7 @@ const infoModel = require("../Models/infoModel");
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
+    console.log('Hero Controller Body: ', req.body);
     const { admin } = req.body;
     if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
     try {
