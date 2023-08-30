@@ -11,13 +11,13 @@ const fetchAndUpdate = async (req, res) => {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
         console.log('Hero Updating..')
         // fetch
-        const response = await axios.get(`https://cors.zimjs.com/${baseUrl}/popular?page=1&perPage=15`);
+        const response = await axios.get(`${baseUrl}/popular?page=1&perPage=15`);
         const popularData = response.data.data;
 
         let heroArray = []
         // loop through the popular data
         for (const animeData of popularData) {
-            const infoResponse = await axios.get(`https://cors.zimjs.com/${baseUrl}/anime/${animeData.slug}`);
+            const infoResponse = await axios.get(`${baseUrl}/anime/${animeData.slug}`);
             heroArray.push(infoResponse.data);
         }
 

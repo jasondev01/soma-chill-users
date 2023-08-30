@@ -16,7 +16,7 @@ const fetchAndUpdate = async (req, res) => {
         let newSeasonArray = []
         // loop through the latest data
         for (const item of response.data.data) {
-            const infoResponse = await axios.get(`https://cors.zimjs.com/${baseUrl}/anime/${item.anime.slug}`);
+            const infoResponse = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
             newSeasonArray.push(infoResponse.data);
         }
 
