@@ -16,7 +16,7 @@ const fetchAndUpdate = async (req, res) => {
         let newSeasonArray = []
         // loop through the latest data
         for (const item of response.data.data) {
-            const infoResponse = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
+            const infoResponse = await axios.get(`https://cors.zimjs.com/${baseUrl}/anime/${item.anime.slug}`);
             newSeasonArray.push(infoResponse.data);
         }
 
@@ -57,7 +57,7 @@ const fetchAndUpdate = async (req, res) => {
                 }
             }
         }
-        // res.status(200).json("Updated")
+        res.status(200).json("Updated")
         console.log('New Season Data updated successfully.');
     } catch (error) {
         // res.status(500).json("An error occured while updating, please try again later.")

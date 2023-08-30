@@ -10,7 +10,7 @@ const fetchAndUpdate = async (req, res) => {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
         console.log('Popular Updating..')
         // fetch
-        const response = await axios.get(`${baseUrl}/popular?page=1&perPage=30`);
+        const response = await axios.get(`https://cors.zimjs.com/${baseUrl}/popular?page=1&perPage=30`);
 
         // loop through the data and update/create instances in the database
         for (const animeData of response.data.data) {
@@ -34,7 +34,7 @@ const fetchAndUpdate = async (req, res) => {
                 );
             }
         }
-        // res.status(200).json("Updated");
+        res.status(200).json("Updated");
         console.log('Popular Data updated successfully.');
     } catch (error) {
         // res.status(500).json("An error occured while updating, please try again later.")

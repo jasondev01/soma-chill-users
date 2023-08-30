@@ -10,7 +10,7 @@ const fetchAndUpdate = async (req, res) => {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
         console.log('Latest Updating..')
         // fetch
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
+        const response = await axios.get(`https://cors.zimjs.com/${baseUrl}/recent?page=1&perPage=100`);
         const latestArray = response.data.data;
 
         const sortLatest = [...latestArray].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -40,7 +40,7 @@ const fetchAndUpdate = async (req, res) => {
                 }
             }
         }
-        // res.status(200).json("Updated")
+        res.status(200).json("Updated")
         console.log('Latest Updated')
     } catch (error) {
         // res.status(500).json("An error occured while updating, please try again later.")
