@@ -60,7 +60,7 @@ const fetchAndUpdate = async (req, res) => {
         res.status(200).json("Updated")
         console.log('New Season Data updated successfully.');
     } catch (error) {
-        res.status(500).json("An error occured while updating, please try again later.")
+        // res.status(500).json("An error occured while updating, please try again later.")
         console.log('Error updating data:', error);
     }
 };
