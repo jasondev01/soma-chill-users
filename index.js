@@ -11,6 +11,9 @@ const infoRoute = require("./Routes/infoRoute")
 const app = express(); 
 require("dotenv").config(); 
 
+const serverTimeout = 60000
+app.timeout = serverTimeout;
+
 const originUri = process.env.ORIGIN_URI
 
 const corsOptions = {

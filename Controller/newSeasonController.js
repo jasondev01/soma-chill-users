@@ -8,8 +8,6 @@ require("dotenv").config();
 const fetchSeasonAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
     console.log(baseUrl)
-    const routeTimeout = 100000; // 60 seconds
-    req.setTimeout(routeTimeout);
     try {
         // console.log('New Season Updating..')
         // fetch 
