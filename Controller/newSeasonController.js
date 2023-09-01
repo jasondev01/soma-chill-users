@@ -5,7 +5,7 @@ const cron = require('node-cron');
 const latestModel = require("../Models/latestModel");
 require("dotenv").config(); 
 
-const fetchAndUpdate = async (req, res) => {
+const fetchSeasonAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
     console.log(baseUrl)
     try {
@@ -89,6 +89,6 @@ const getNewSeason = async (req, res) => {
 }
 
 module.exports = { 
-    fetchAndUpdate,
+    fetchSeasonAndUpdate,
     getNewSeason
 };

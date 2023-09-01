@@ -1,12 +1,12 @@
 const express = require("express");
 const { 
-    fetchAndUpdate,
+    fetchSeasonAndUpdate,
     getNewSeason,
 } = require("../Controller/newSeasonController")
 
 const router = express.Router();
 
-router.get("/update-newseason", fetchAndUpdate);
+router.get("/update-newseason", fetchSeasonAndUpdate);
 router.post("/new-season", getNewSeason);
 
 module.exports = router;
