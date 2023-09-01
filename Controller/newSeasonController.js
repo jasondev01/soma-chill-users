@@ -3,6 +3,7 @@ const infoModel = require("../Models/infoModel")
 const axios = require('axios');
 const cron = require('node-cron');
 const latestModel = require("../Models/latestModel");
+require("dotenv").config(); 
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
