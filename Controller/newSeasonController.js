@@ -2,61 +2,56 @@ const newSeasonModel = require("../Models/newSeasonModel");
 const infoModel = require("../Models/infoModel")
 const axios = require('axios');
 const cron = require('node-cron');
+const latestModel = require("../Models/latestModel");
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    // console.log('New Season Controller Body: ', req.body);
-    // const { admin } = req.body;
+    console.log(baseUrl)
     try {
-        // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
         console.log('New Season Updating..')
         // fetch 
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
+        const response = await latestModel.find();
+        
+        for (const item of response) {
+            const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
 
-        let newSeasonArray = []
-        // loop through the latest data
-        for (const item of response.data.data) {
-            const infoResponse = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
-            newSeasonArray.push(infoResponse.data);
-        }
-
-        for (const item of newSeasonArray) {
-            if (item.countryOfOrigin !== 'CN') {
+            if (info.data.countryOfOrigin !== 'CN') {
                 const existingAnime = await newSeasonModel.findOne({
                     $or: [
-                        { 'slug': item.slug },
-                        { 'anilistId': item.anilistId },
-                        { 'id': item.id },
+                        { 'slug': info.data.slug },
+                        { 'anilistId': info.data.anilistId },
+                        { 'id': info.data.id },
                     ],
                 });
 
                 const existingAnimeInfo = await infoModel.findOne({
                     $or: [
-                        { 'slug': item.slug },
-                        { 'anilistId': item.anilistId },
-                        { 'id': item.id },
+                        { 'slug': info.data.slug },
+                        { 'anilistId': info.data.anilistId },
+                        { 'id': info.data.id },
                     ],
                 })
 
                 if (!existingAnime || !existingAnimeInfo) {
-                    await infoModel.create(item)
-                    await newSeasonModel.create(item); // create a new document if no match is found
+                    await newSeasonModel.create(info.data); // create a new document if no match is found
+                    await infoModel.create(info.data)
                 } else {
                     // update the existing document with changes
-                    await infoModel.findByIdAndUpdate(
-                        { _id: existingAnimeInfo._id },
-                        item,
-                        { new: true }
-                    )
-
                     await newSeasonModel.findOneAndUpdate(
                         { _id: existingAnime._id },
-                        item,
+                        info.data,
                         { new: true }
                     );
+
+                    await infoModel.findByIdAndUpdate(
+                        { _id: existingAnimeInfo._id },
+                        info.data,
+                        { new: true }
+                    )
                 }
             }
         }
+
         res.status(200).json("Updated")
         console.log('New Season Data updated successfully.');
     } catch (error) {
@@ -65,8 +60,10 @@ const fetchAndUpdate = async (req, res) => {
     }
 };
 
+// fetchAndUpdate()
+
 // fetch every 2hours
-cron.schedule('20 */2 * * *', () => {
+cron.schedule('10 */2 * * *', () => {
     fetchAndUpdate();
 });
 
