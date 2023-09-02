@@ -7,7 +7,7 @@ require("dotenv").config();
 
 const fetchSeasonAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    console.log(baseUrl)
+    // console.log(baseUrl)
     try {
         // console.log('New Season Updating..')
         // fetch 
@@ -61,12 +61,38 @@ const fetchSeasonAndUpdate = async (req, res) => {
     }
 };
 
-// fetchAndUpdate()
+const updateOneItem = async (req, res) => {
+    const baseUrl = process.env.ANIME_URL;
+    const { slug } = req.body;
+    try {
+        const info = await axios.get(`${baseUrl}/anime/${slug}`);
+        const existingAnime = await newSeasonModel.findOne({ 'slug': info.data.slug });
+        const existingAnimeInfo = await infoModel.findOne({ 'slug': info.data.slug });
 
-// fetch every 2hours
-cron.schedule('10 */2 * * *', () => {
-    fetchAndUpdate();
-});
+        if (!existingAnime || !existingAnimeInfo) {
+            await newSeasonModel.create(info.data); 
+            await infoModel.create(info.data)
+        } else {
+            await newSeasonModel.findOneAndUpdate(
+                { _id: existingAnime._id },
+                info.data,
+                { new: true }
+            );
+
+            await infoModel.findByIdAndUpdate(
+                { _id: existingAnimeInfo._id },
+                info.data,
+                { new: true }
+            )
+        }
+        res.status(200).json({ 
+            message: 'Anime item updated successfully', 
+        });
+    } catch (error) {
+        console.log('updateOneItem', error)
+        res.status(500).json({ error: 'An error occurred' });
+    }
+}
 
 const getNewSeason = async (req, res) => {
     const { restSecret } = req.body;
@@ -88,7 +114,13 @@ const getNewSeason = async (req, res) => {
     }
 }
 
+// fetch every 2hours
+// cron.schedule('10 */2 * * *', () => {
+//     fetchAndUpdate();
+// });
+
 module.exports = { 
     fetchSeasonAndUpdate,
-    getNewSeason
+    getNewSeason,
+    updateOneItem,
 };
