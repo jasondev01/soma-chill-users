@@ -47,16 +47,12 @@ const fetchAndUpdate = async (req, res) => {
 
 const fetchAndUpdateServer = async () => {
     const baseUrl = process.env.ANIME_URL;
-    // const { admin } = req.body;
     try {
-        // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
-        // fetch
         const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
         const latestArray = response.data.data;
 
         const sortLatest = [...latestArray].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-        // loop through the data and update/create instances in the database
         for (const animeData of sortLatest) {
             if (animeData.anime.countryOfOrigin !== 'CN') {
                 const existingAnime = await latestModel.findOne({
@@ -69,9 +65,8 @@ const fetchAndUpdateServer = async () => {
                 });
     
                 if (!existingAnime) {
-                    await latestModel.create(animeData); // create a new document if no match is found
+                    await latestModel.create(animeData); 
                 } else {
-                    // update the existing document with changes
                     await latestModel.findOneAndUpdate(
                         { _id: existingAnime._id },
                         animeData,
@@ -82,7 +77,6 @@ const fetchAndUpdateServer = async () => {
         }
         console.log('Latest Updated')
     } catch (error) {
-        // res.status(500).json("An error occured while updating, please try again later.")
         console.log('Error updating data:', error);
     }
 };
