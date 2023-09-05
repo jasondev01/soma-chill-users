@@ -4,11 +4,9 @@ const cron = require('node-cron')
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    // console.log('Latest Controller Body: ', req.body);    
     // const { admin } = req.body;
     try {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
-        console.log('Latest Updating..')
         // fetch
         const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
         const latestArray = response.data.data;
