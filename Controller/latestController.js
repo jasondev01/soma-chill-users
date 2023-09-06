@@ -10,9 +10,9 @@ const fetchAndUpdate = async (req, res) => {
         const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
         const latestArray = response.data.data;
 
-        const sortLatest = [...latestArray].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        latestArray.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-        for (const animeData of sortLatest) {
+        for (const animeData of latestArray) {
             if (animeData.anime.countryOfOrigin !== 'CN') {
                 const existingAnime = await latestModel.findOne({ 'animeId': animeData.animeId });
     
