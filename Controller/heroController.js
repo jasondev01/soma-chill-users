@@ -6,7 +6,6 @@ const infoModel = require("../Models/infoModel");
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
     try {
-        console.log('Hero Updating..')
         const response = await axios.get(`${baseUrl}/popular?page=1&perPage=10`);
         const popularData = response.data.data;
 
@@ -16,34 +15,35 @@ const fetchAndUpdate = async (req, res) => {
             heroArray.push(infoResponse.data);
         }
 
-        for (const item of heroArray) {
-            const existingAnime = await heroModel.findOne({ 'slug': item.slug });
+        await Promise.all(heroArray.map(async (item) => {
+            const existingHero = await heroModel.findOne({ 'slug': item.slug });
 
-            if (!existingAnime) {
-                await heroModel.create(item); 
+            if (!existingHero) {
+                await heroModel.create(item);
             } else {
                 await heroModel.findOneAndUpdate(
-                    { _id: existingAnime._id },
+                    { _id: existingHero._id },
                     item,
                     { new: true }
                 );
             }
-        }
-        res.status(200).json("Updated")
+        }));
 
-        for (const item of heroArray) {
-            const existingAnimeInfo = await infoModel.findOne({ 'slug': item.slug })
+        await Promise.all(heroArray.map(async (item) => {
+            const existingAnimeInfo = await infoModel.findOne({ 'slug': item.slug });
 
             if (!existingAnimeInfo) {
-                await infoModel.create(item)
+                await infoModel.create(item);
             } else {
                 await infoModel.findByIdAndUpdate(
                     { _id: existingAnimeInfo._id },
                     item,
                     { new: true }
-                )
+                );
             }
-        }
+        }));
+
+        res.status(200).json("Updated")
         console.log('Hero Data updated successfully.');
     } catch (error) {
         // res.status(500).json("An error occured while updating, please try again later.")
