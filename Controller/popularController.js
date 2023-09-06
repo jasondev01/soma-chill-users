@@ -7,25 +7,14 @@ const fetchAndUpdate = async (req, res) => {
     // const { admin } = req.body;
     try {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
-        console.log('Popular Updating..')
-        // fetch
         const response = await axios.get(`${baseUrl}/popular?page=1&perPage=30`);
 
-        // loop through the data and update/create instances in the database
         for (const animeData of response.data.data) {
-            const existingAnime = await popularModel.findOne({
-                $or: [
-                    { 'slug': animeData.slug },
-                    { 'anilistId': animeData.anilistId },
-                    { 'id': animeData.id },
-                ],
-            });
+            const existingAnime = await popularModel.findOne({ 'slug': animeData.slug });
 
             if (!existingAnime) {
-                // create a new document if no match is found
                 await popularModel.create(animeData);
             } else {
-                // update the existing document with changes
                 await popularModel.findOneAndUpdate(
                     { _id: existingAnime._id },
                     animeData,
