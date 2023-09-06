@@ -7,7 +7,7 @@ const fetchAndUpdate = async (req, res) => {
     // const { admin } = req.body;
     try {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
+        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=50`);
         const latestArray = response.data.data;
 
         latestArray.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
