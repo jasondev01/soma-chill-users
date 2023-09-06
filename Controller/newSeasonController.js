@@ -9,9 +9,8 @@ const fetchSeasonAndUpdate = async (req, res) => {
     try {
         const response = await latestModel.find();
 
-        const updatePromises = response.map(async (item) => {
+        await Promise.all(response.map(async (item) => {
             const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
-            
             if (info.data.countryOfOrigin !== 'CN') {
                 const existingAnime = await newSeasonModel.findOne({ 'slug': info.data.slug });
                 
@@ -24,7 +23,15 @@ const fetchSeasonAndUpdate = async (req, res) => {
                         { new: true }
                     );
                 }
-                
+            }
+        }))
+        res.status(200).json("Updated");
+        console.log('New Season Data updated successfully.');
+
+        await Promise.all(response.map(async (item) => {
+            const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
+            
+            if (info.data.countryOfOrigin !== 'CN') {
                 const existingAnimeInfo = await infoModel.findOne({ 'slug': info.data.slug });
                 
                 if (!existingAnimeInfo) {
@@ -37,14 +44,10 @@ const fetchSeasonAndUpdate = async (req, res) => {
                     );
                 }
             }
-        });
+        }))
 
-        await Promise.all(updatePromises);
-
-        res.status(200).json("Updated");
-        console.log('New Season Data updated successfully.');
     } catch (error) {
-        // res.status(500).json("An error occured while updating, please try again later.")
+        res.status(500).json("An error occured while updating, please try again later.")
         console.log('Error updating data:', error);
     }
 };
@@ -104,33 +107,40 @@ const getNewSeason = async (req, res) => {
 const fetchSeasonAndUpdateServer = async () => {
     const baseUrl = process.env.ANIME_URL;
     try {
+        console.log('New Season Updating..');
         const response = await latestModel.find();
-        
-        for (const item of response) {
-            const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
 
+        const updatePromises = response.map(async (item) => {
+            const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
+            
             if (info.data.countryOfOrigin !== 'CN') {
                 const existingAnime = await newSeasonModel.findOne({ 'slug': info.data.slug });
-                const existingAnimeInfo = await infoModel.findOne({ 'slug': info.data.slug })
-
-                if (!existingAnime || !existingAnimeInfo) {
+                
+                if (!existingAnime) {
                     await newSeasonModel.create(info.data);
-                    await infoModel.create(info.data)
                 } else {
                     await newSeasonModel.findOneAndUpdate(
                         { _id: existingAnime._id },
                         info.data,
                         { new: true }
                     );
-
+                }
+                
+                const existingAnimeInfo = await infoModel.findOne({ 'slug': info.data.slug });
+                
+                if (!existingAnimeInfo) {
+                    await infoModel.create(info.data);
+                } else {
                     await infoModel.findByIdAndUpdate(
                         { _id: existingAnimeInfo._id },
                         info.data,
                         { new: true }
-                    )
+                    );
                 }
             }
-        }
+        });
+
+        await Promise.all(updatePromises);
 
         console.log('New Season Data updated successfully.');
     } catch (error) {

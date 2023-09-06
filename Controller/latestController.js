@@ -4,33 +4,31 @@ const cron = require('node-cron')
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    // const { admin } = req.body;
     try {
-        // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
-        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=50`);
+        const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
         const latestArray = response.data.data;
 
         latestArray.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-        for (const animeData of latestArray) {
-            if (animeData.anime.countryOfOrigin !== 'CN') {
-                const existingAnime = await latestModel.findOne({ 'animeId': animeData.animeId });
+        await Promise.all(latestArray.map( async (item) => {
+            if (item.anime.countryOfOrigin !== 'CN') {
+                const existingAnime = await latestModel.findOne({ 'animeId': item.animeId });
     
                 if (!existingAnime) {
-                    await latestModel.create(animeData); 
+                    await latestModel.create(item); 
                 } else {
                     await latestModel.findOneAndUpdate(
                         { _id: existingAnime._id },
-                        animeData,
+                        item,
                         { new: true }
                     );
                 }
             }
-        }
+        }))
         res.status(200).json("Updated")
         console.log('Latest Updated')
     } catch (error) {
-        // res.status(500).json("An error occured while updating, please try again later.")
+        res.status(500).json("An error occured while updating, please try again later.")
         console.log('Error updating data:', error);
     }
 };

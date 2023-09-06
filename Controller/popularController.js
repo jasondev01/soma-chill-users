@@ -4,28 +4,27 @@ const cron = require('node-cron');
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    // const { admin } = req.body;
     try {
-        // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
         const response = await axios.get(`${baseUrl}/popular?page=1&perPage=30`);
 
-        for (const animeData of response.data.data) {
-            const existingAnime = await popularModel.findOne({ 'slug': animeData.slug });
+        await Promise.all(response.data.data.map( async (item) => {
+            const existingAnime = await popularModel.findOne({ 'slug': item.slug });
 
             if (!existingAnime) {
-                await popularModel.create(animeData);
+                await popularModel.create(item);
             } else {
                 await popularModel.findOneAndUpdate(
                     { _id: existingAnime._id },
-                    animeData,
+                    item,
                     { new: true }
                 );
             }
-        }
+        }))
+
         res.status(200).json("Updated");
         console.log('Popular Data updated successfully.');
     } catch (error) {
-        // res.status(500).json("An error occured while updating, please try again later.")
+        res.status(500).json("An error occured while updating, please try again later.")
         console.log('Error updating data:', error);
     }
 };
