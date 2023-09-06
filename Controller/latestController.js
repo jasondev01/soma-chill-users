@@ -7,28 +7,18 @@ const fetchAndUpdate = async (req, res) => {
     // const { admin } = req.body;
     try {
         // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
-        // fetch
         const response = await axios.get(`${baseUrl}/recent?page=1&perPage=100`);
         const latestArray = response.data.data;
 
         const sortLatest = [...latestArray].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-        // loop through the data and update/create instances in the database
         for (const animeData of sortLatest) {
             if (animeData.anime.countryOfOrigin !== 'CN') {
-                const existingAnime = await latestModel.findOne({
-                    $or: [
-                        { 'anime.slug': animeData.anime.slug },
-                        { 'anime.anilistId': animeData.anime.anilistId },
-                        { 'anime.id': animeData.anime.id },
-                        { 'animeId': animeData.animeId },
-                    ],
-                });
+                const existingAnime = await latestModel.findOne({ 'animeId': animeData.animeId });
     
                 if (!existingAnime) {
-                    await latestModel.create(animeData); // create a new document if no match is found
+                    await latestModel.create(animeData); 
                 } else {
-                    // update the existing document with changes
                     await latestModel.findOneAndUpdate(
                         { _id: existingAnime._id },
                         animeData,

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-// Define the Anime Schema
-
 // Define the Episode Source Schema
 const episodeSourceSchema = new mongoose.Schema({
     id: String,
