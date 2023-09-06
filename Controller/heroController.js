@@ -65,9 +65,61 @@ const fetchAndUpdate = async (req, res) => {
     }
 };
 
+const fetchAndUpdateServer = async () => {
+    const baseUrl = process.env.ANIME_URL;
+    try {
+        const response = await axios.get(`${baseUrl}/popular?page=1&perPage=15`);
+        const popularData = response.data.data;
+
+        let heroArray = []
+        for (const animeData of popularData) {
+            const infoResponse = await axios.get(`${baseUrl}/anime/${animeData.slug}`);
+            heroArray.push(infoResponse.data);
+        }
+
+        for (const item of heroArray) {
+            const existingAnime = await heroModel.findOne({
+                $or: [
+                    { 'slug': item.slug },
+                    { 'anilistId': item.anilistId },
+                    { 'id': item.id },
+                ],
+            });
+
+            const existingAnimeInfo = await infoModel.findOne({
+                $or: [
+                    { 'slug': item.slug },
+                    { 'anilistId': item.anilistId },
+                    { 'id': item.id },
+                ],
+            })
+
+            if (!existingAnime || !existingAnimeInfo) {
+                await infoModel.create(item)
+                await heroModel.create(item); 
+            } else {
+                await heroModel.findOneAndUpdate(
+                    { _id: existingAnime._id },
+                    item,
+                    { new: true }
+                );
+
+                await infoModel.findByIdAndUpdate(
+                    { _id: existingAnimeInfo._id },
+                    item,
+                    { new: true }
+                )
+            }
+        }
+        console.log('Hero Data updated successfully.');
+    } catch (error) {
+        console.log('Error updating data:', error);
+    }
+};
+
 // fetch every 1.5hours
 cron.schedule('30 */1 * * *', () => {
-    fetchAndUpdate();
+    fetchAndUpdateServer();
 });
 
 const getHero = async (req, res) => {

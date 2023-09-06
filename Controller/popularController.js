@@ -41,9 +41,39 @@ const fetchAndUpdate = async (req, res) => {
     }
 };
 
+const fetchAndUpdateServer = async () => {
+    const baseUrl = process.env.ANIME_URL;
+    try {
+        const response = await axios.get(`${baseUrl}/popular?page=1&perPage=30`);
+
+        for (const animeData of response.data.data) {
+            const existingAnime = await popularModel.findOne({
+                $or: [
+                    { 'slug': animeData.slug },
+                    { 'anilistId': animeData.anilistId },
+                    { 'id': animeData.id },
+                ],
+            });
+
+            if (!existingAnime) {
+                await popularModel.create(animeData);
+            } else {
+                await popularModel.findOneAndUpdate(
+                    { _id: existingAnime._id },
+                    animeData,
+                    { new: true }
+                );
+            }
+        }
+        console.log('Popular Data updated successfully.');
+    } catch (error) {
+        console.log('Error updating data:', error);
+    }
+};
+
 // fetch every 1hour
-cron.schedule('0 */1 * * *', () => {
-    fetchAndUpdate();
+cron.schedule('1 */1 * * *', () => {
+    fetchAndUpdateServer();
 });
 
 const getPopular = async (req, res) => {

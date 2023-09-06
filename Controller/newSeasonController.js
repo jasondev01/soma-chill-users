@@ -7,10 +7,7 @@ require("dotenv").config();
 
 const fetchSeasonAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    // console.log(baseUrl)
     try {
-        // console.log('New Season Updating..')
-        // fetch 
         const response = await latestModel.find();
         
         for (const item of response) {
@@ -34,16 +31,14 @@ const fetchSeasonAndUpdate = async (req, res) => {
                 })
 
                 if (!existingAnime || !existingAnimeInfo) {
-                    await newSeasonModel.create(info.data); // create a new document if no match is found
+                    await newSeasonModel.create(info.data); 
                     await infoModel.create(info.data)
                 } else {
-                    // update the existing document with changes
                     await newSeasonModel.findOneAndUpdate(
                         { _id: existingAnime._id },
                         info.data,
                         { new: true }
                     );
-
                     await infoModel.findByIdAndUpdate(
                         { _id: existingAnimeInfo._id },
                         info.data,
@@ -78,7 +73,6 @@ const updateOneItem = async (req, res) => {
                 info.data,
                 { new: true }
             );
-
             await infoModel.findByIdAndUpdate(
                 { _id: existingAnimeInfo._id },
                 info.data,
@@ -114,10 +108,60 @@ const getNewSeason = async (req, res) => {
     }
 }
 
-// fetch every 2hours
-// cron.schedule('10 */2 * * *', () => {
-//     fetchAndUpdate();
-// });
+const fetchSeasonAndUpdateServer = async () => {
+    const baseUrl = process.env.ANIME_URL;
+    try {
+        const response = await latestModel.find();
+        
+        for (const item of response) {
+            const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
+
+            if (info.data.countryOfOrigin !== 'CN') {
+                const existingAnime = await newSeasonModel.findOne({
+                    $or: [
+                        { 'slug': info.data.slug },
+                        { 'anilistId': info.data.anilistId },
+                        { 'id': info.data.id },
+                    ],
+                });
+
+                const existingAnimeInfo = await infoModel.findOne({
+                    $or: [
+                        { 'slug': info.data.slug },
+                        { 'anilistId': info.data.anilistId },
+                        { 'id': info.data.id },
+                    ],
+                })
+
+                if (!existingAnime || !existingAnimeInfo) {
+                    await newSeasonModel.create(info.data);
+                    await infoModel.create(info.data)
+                } else {
+                    await newSeasonModel.findOneAndUpdate(
+                        { _id: existingAnime._id },
+                        info.data,
+                        { new: true }
+                    );
+
+                    await infoModel.findByIdAndUpdate(
+                        { _id: existingAnimeInfo._id },
+                        info.data,
+                        { new: true }
+                    )
+                }
+            }
+        }
+
+        console.log('New Season Data updated successfully.');
+    } catch (error) {
+        console.log('Error updating data:', error);
+    }
+};
+
+// fetch every 2hours and 5 mins
+cron.schedule('5 */2 * * *', () => {
+    fetchSeasonAndUpdateServer();
+});
 
 module.exports = { 
     fetchSeasonAndUpdate,
