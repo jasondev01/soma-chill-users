@@ -5,10 +5,7 @@ const infoModel = require("../Models/infoModel");
 
 const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
-    // console.log('Hero Controller baseUrl: ', baseUrl);
-    // const { admin } = req.body;
     try {
-        // if ( admin !== process.env.ADMIN_EMAIL && admin !== process.env.SUB_EMAIL) return res.status(500).json('Unauthorized');
         console.log('Hero Updating..')
         const response = await axios.get(`${baseUrl}/popular?page=1&perPage=15`);
         const popularData = response.data.data;
@@ -19,35 +16,27 @@ const fetchAndUpdate = async (req, res) => {
             heroArray.push(infoResponse.data);
         }
 
-        // loop the array
         for (const item of heroArray) {
-            const existingAnime = await heroModel.findOne({
-                $or: [
-                    { 'slug': item.slug },
-                    { 'anilistId': item.anilistId },
-                    { 'id': item.id },
-                ],
-            });
+            const existingAnime = await heroModel.findOne({ 'slug': item.slug });
 
-            const existingAnimeInfo = await infoModel.findOne({
-                $or: [
-                    { 'slug': item.slug },
-                    { 'anilistId': item.anilistId },
-                    { 'id': item.id },
-                ],
-            })
-
-            if (!existingAnime || !existingAnimeInfo) {
-                await infoModel.create(item)
-                await heroModel.create(item); // Create a new document if no match is found
+            if (!existingAnime) {
+                await heroModel.create(item); 
             } else {
-                // Update the existing document with changes
                 await heroModel.findOneAndUpdate(
                     { _id: existingAnime._id },
                     item,
                     { new: true }
                 );
+            }
+        }
+        res.status(200).json("Updated")
 
+        for (const item of heroArray) {
+            const existingAnimeInfo = await infoModel.findOne({ 'slug': item.slug })
+
+            if (!existingAnimeInfo) {
+                await infoModel.create(item)
+            } else {
                 await infoModel.findByIdAndUpdate(
                     { _id: existingAnimeInfo._id },
                     item,
@@ -55,7 +44,6 @@ const fetchAndUpdate = async (req, res) => {
                 )
             }
         }
-        res.status(200).json("Updated")
         console.log('Hero Data updated successfully.');
     } catch (error) {
         // res.status(500).json("An error occured while updating, please try again later.")
