@@ -7,7 +7,7 @@ const fetchAndUpdate = async (req, res) => {
     const baseUrl = process.env.ANIME_URL;
     try {
         console.log('Hero Updating..')
-        const response = await axios.get(`${baseUrl}/popular?page=1&perPage=15`);
+        const response = await axios.get(`${baseUrl}/popular?page=1&perPage=10`);
         const popularData = response.data.data;
 
         let heroArray = []
