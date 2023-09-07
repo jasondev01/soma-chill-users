@@ -26,7 +26,6 @@ const fetchSeasonAndUpdate = async (req, res) => {
             }
         }))
         res.status(200).json("Updated");
-        console.log('New Season Data updated successfully.');
 
         await Promise.all(response.map(async (item) => {
             const info = await axios.get(`${baseUrl}/anime/${item.anime.slug}`);
@@ -46,6 +45,7 @@ const fetchSeasonAndUpdate = async (req, res) => {
             }
         }))
 
+        console.log('New Season Data updated successfully.');
     } catch (error) {
         res.status(500).json("An error occured while updating, please try again later.")
         console.log('Error updating data:', error);
